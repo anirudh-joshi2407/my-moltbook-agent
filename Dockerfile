@@ -1,14 +1,14 @@
-# Use Node 22 (Required for the 2026 agent runtime)
+# Use Node 22
 FROM node:22-slim
 
-# Install BOTH package names to survive the rebrand chaos
-# We install 'openclaw' first, then 'moltbot' as fallback
+# CRITICAL FIX: Install Git (Required for downloading bleeding-edge skills)
+RUN apt-get update && apt-get install -y git
+
+# Install the agent (installing both names to be safe)
 RUN npm install -g openclaw moltbot
 
-# Set a NEUTRAL working directory (Crucial Fix)
-# We do NOT use /root/.moltbot here to prevent the path collision
+# Set the neutral working directory
 WORKDIR /app
 
-# Run the agent using 'npx' to auto-locate the binary
-# We use the 'openclaw' command which is the new standard as of Feb 1st
+# Run the agent using 'npx' to find the installed binary automatically
 CMD ["npx", "openclaw", "onboard", "--non-interactive", "--accept-risk"]
