@@ -1,14 +1,14 @@
 # Use Node 22
 FROM node:22-slim
 
-# CRITICAL FIX: Install Git (Required for downloading bleeding-edge skills)
+# Install Git (Required for skills)
 RUN apt-get update && apt-get install -y git
 
-# Install the agent (installing both names to be safe)
-RUN npm install -g openclaw moltbot
+# Install ONLY the new package (Removing 'moltbot' fixes the binary conflict)
+RUN npm install -g openclaw
 
-# Set the neutral working directory
+# Set working directory
 WORKDIR /app
 
-# Run the agent using 'npx' to find the installed binary automatically
-CMD ["npx", "openclaw", "onboard", "--non-interactive", "--accept-risk"]
+# Run the 'prod' mode using the daemon binary
+CMD ["openclawd", "prod"]
