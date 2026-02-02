@@ -1,26 +1,21 @@
 # Use Node 22
 FROM node:22-slim
 
-# Install Git and Socat (The Network Bridge)
-RUN apt-get update && apt-get install -y git socat
-
-# Install the Agent
+# Install the Agent (No socat needed anymore)
 RUN npm install -g openclaw
 
 # Set Work Directory
 WORKDIR /app
 
-# Create the "Master Script" with SECURITY DISABLED
-# 1. Writes config to force Google Brain AND Disable Pairing Check
-# 2. Starts the Bridge (Port 3000 -> 4000)
-# 3. Starts the Agent on Port 4000
+# Create the Simple Start Script
+# 1. Configures agent to listen on 0.0.0.0 (Public Internet)
+# 2. Disables Pairing Security (So you don't get Error 1008)
+# 3. Sets Port 3000 (Matches Railway)
 RUN printf "#!/bin/bash\n" > start.sh && \
     printf "mkdir -p /root/.openclaw\n" >> start.sh && \
-    printf "echo '{\"llm\":{\"provider\":\"google\"},\"gateway\":{\"controlUi\":{\"allowed\":true,\"allowInsecureAuth\":true}}}' > /root/.openclaw/config.json\n" >> start.sh && \
-    printf "socat TCP-LISTEN:3000,fork,bind=0.0.0.0 TCP:127.0.0.1:4000 &\n" >> start.sh && \
-    printf "export PORT=4000\n" >> start.sh && \
-    printf "openclaw gateway --port 4000 --allow-unconfigured\n" >> start.sh && \
+    printf "echo '{\"gateway\":{\"bind\":\"0.0.0.0\",\"trustedProxies\":[\"*\"],\"controlUi\":{\"allowed\":true,\"allowInsecureAuth\":true}},\"llm\":{\"provider\":\"google\"}}' > /root/.openclaw/config.json\n" >> start.sh && \
+    printf "openclaw gateway --port 3000 --allow-unconfigured\n" >> start.sh && \
     chmod +x start.sh
 
-# Run the script automatically
+# Run the script
 CMD ["./start.sh"]
