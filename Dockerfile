@@ -1,14 +1,14 @@
 # Use Node 22
 FROM node:22-slim
 
-# Install Git
-RUN apt-get update && apt-get install -y git
+# Install Git and Socat (The Traffic Forwarder)
+RUN apt-get update && apt-get install -y git socat
 
-# Install the OpenClaw package
+# Install the OpenClaw agent
 RUN npm install -g openclaw
 
 # Set working directory
 WORKDIR /app
 
-# Run the Gateway (Use the variable we set)
-CMD ["openclaw", "gateway", "--port", "3000"]
+# The command is handled in Railway
+CMD ["bash"]
