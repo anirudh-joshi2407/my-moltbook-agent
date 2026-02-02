@@ -1,14 +1,14 @@
 # Use Node 22
 FROM node:22-slim
 
-# Install Git (Required for skills)
+# Install Git
 RUN apt-get update && apt-get install -y git
 
-# Install ONLY the new package (Removing 'moltbot' fixes the binary conflict)
+# Install the OpenClaw package
 RUN npm install -g openclaw
 
 # Set working directory
 WORKDIR /app
 
-# Run the 'prod' mode using the daemon binary
-CMD ["openclawd", "prod"]
+# Run the Gateway (Use the variable we set)
+CMD ["openclaw", "gateway", "--port", "3000"]
