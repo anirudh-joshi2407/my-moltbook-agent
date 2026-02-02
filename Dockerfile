@@ -10,11 +10,7 @@ RUN npm install -g openclaw
 # Set Work Directory
 WORKDIR /app
 
-# Simple Start Script (No Config File Injection)
-# We will rely on Railway Variables for configuration
-RUN printf "#!/bin/bash\n" > start.sh && \
-    printf "openclaw gateway --port 3000 --allow-unconfigured\n" >> start.sh && \
-    chmod +x start.sh
-
-# Run the script
-CMD ["./start.sh"]
+# Run Command:
+# 1. rm -rf ... -> Deletes any bad config file that might be hiding
+# 2. openclaw ... -> Starts the agent on Port 3000
+CMD ["/bin/sh", "-c", "rm -rf /root/.openclaw && openclaw gateway --port 3000 --allow-unconfigured"]
