@@ -10,13 +10,13 @@ RUN npm install -g openclaw
 # Set Work Directory
 WORKDIR /app
 
-# Create the "Master Script" directly in the image
-# 1. Configures the brain to use Google
+# Create the "Master Script" with SECURITY DISABLED
+# 1. Writes config to force Google Brain AND Disable Pairing Check
 # 2. Starts the Bridge (Port 3000 -> 4000)
 # 3. Starts the Agent on Port 4000
 RUN printf "#!/bin/bash\n" > start.sh && \
     printf "mkdir -p /root/.openclaw\n" >> start.sh && \
-    printf "echo '{\"llm\":{\"provider\":\"google\"}}' > /root/.openclaw/config.json\n" >> start.sh && \
+    printf "echo '{\"llm\":{\"provider\":\"google\"},\"gateway\":{\"controlUi\":{\"allowed\":true,\"allowInsecureAuth\":true}}}' > /root/.openclaw/config.json\n" >> start.sh && \
     printf "socat TCP-LISTEN:3000,fork,bind=0.0.0.0 TCP:127.0.0.1:4000 &\n" >> start.sh && \
     printf "export PORT=4000\n" >> start.sh && \
     printf "openclaw gateway --port 4000 --allow-unconfigured\n" >> start.sh && \
